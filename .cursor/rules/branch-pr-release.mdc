@@ -1,0 +1,39 @@
+---
+description: Branch-first workflow, PR rules, changelog, and manual releases for PostForge
+alwaysApply: true
+---
+
+# Branch, PR & release guardrails
+
+PostForge is a **template app repo** — not an npm package. Follow branch-first development and manual GitHub Releases.
+
+## Read first
+
+- [docs/contributing.md](../docs/contributing.md) — branches, PRs, commits, pre-PR checklist
+- [docs/releasing.md](../docs/releasing.md) — manual releases, version invariant, recovery
+- [docs/CURRENT_PRODUCT_SURFACE.md](../docs/CURRENT_PRODUCT_SURFACE.md) — update when routes/endpoints change
+- [CHANGELOG.md](../CHANGELOG.md) — `## [Unreleased]` for in-progress changes
+
+## Branches
+
+- Base: **`main`** only (no `develop`).
+- Create `feature/`, `fix/`, `docs/`, or `chore/` branches before substantive work.
+- **Never** commit or push to `main` unless the user explicitly asks.
+- **Never** merge PRs, approve PRs, or run destructive git commands unless explicitly asked.
+
+## Commits & PRs
+
+- Use Conventional Commits (`feat:`, `fix:`, `docs:`, `chore:`, …).
+- Commit **only when asked** — otherwise leave work uncommitted or on a feature branch.
+- Open PRs with `gh pr create` **only when asked**.
+- Before declaring code work complete: run **`npm run validate`**, update tests, `CHANGELOG.md`, and `CURRENT_PRODUCT_SURFACE.md` when applicable.
+
+## Releases (agents)
+
+- Version source: **`VERSION`** ⟺ tag **`vX.Y.Z`** ⟺ GitHub Release **`vX.Y.Z`**.
+- **Do not** run `.github/workflows/release.yml`, create tags, or create GitHub Releases without explicit user approval.
+- **Do not** commit release metadata to `main` — only the release workflow may do that.
+
+## Auth package
+
+- Consume `@tgoliveira/secure-auth` via public exports only — do not modify the package or its schema from PostForge unless explicitly requested.

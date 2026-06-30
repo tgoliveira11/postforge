@@ -182,6 +182,20 @@ Blogs created from the template **do not auto-update** when PostForge upstream c
 | [FAQ.md](docs/FAQ.md) | Common questions |
 | [ARCHITECTURE.md](docs/ARCHITECTURE.md) | Technical architecture |
 | [ROADMAP.md](docs/ROADMAP.md) | Milestones and future work |
+| [contributing.md](docs/contributing.md) | Branch workflow, PRs, validation |
+| [releasing.md](docs/releasing.md) | Manual versioned releases |
+| [CURRENT_PRODUCT_SURFACE.md](docs/CURRENT_PRODUCT_SURFACE.md) | Routes, APIs, integrations inventory |
+
+---
+
+## Contributing & releases
+
+- **Contributing:** [CONTRIBUTING.md](CONTRIBUTING.md) → [docs/contributing.md](docs/contributing.md)
+- **Validation:** `npm run validate` (typecheck, test, lint, build)
+- **Version source:** [VERSION](VERSION) — must match git tag `vX.Y.Z` and GitHub Release `vX.Y.Z`
+- **Releases:** manual via GitHub Actions → **Release** workflow ([docs/releasing.md](docs/releasing.md))
+
+Work on `feature/`, `fix/`, `docs/`, or `chore/` branches; merge to `main` via PR. Do not publish to npm.
 
 ---
 
@@ -195,6 +209,7 @@ Blogs created from the template **do not auto-update** when PostForge upstream c
 | `npm run lint` | ESLint |
 | `npm run typecheck` | TypeScript check |
 | `npm test` | Vitest unit tests |
+| `npm run validate` | typecheck + test + lint + build (pre-PR gate) |
 | `npm run db:generate` | Generate Drizzle migrations (schema changes only) |
 | `npm run db:migrate` | Apply migrations |
 | `npm run db:studio` | Drizzle Studio |
