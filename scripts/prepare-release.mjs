@@ -10,6 +10,7 @@
  */
 import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const ROOT = resolve(import.meta.dirname, "..");
 const VERSION_FILE = resolve(ROOT, "VERSION");
@@ -184,9 +185,29 @@ function main() {
 }
 
 try {
-  main();
+  const isCliEntry =
+    process.argv[1] &&
+    resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+
+  if (isCliEntry) {
+    main();
+  }
 } catch (error) {
   const message = error instanceof Error ? error.message : String(error);
   console.error(message);
   process.exit(1);
 }
+
+export {
+  bumpSemver,
+  compareSemver,
+  extractUnreleased,
+  formatDate,
+  hasReleaseNotes,
+  main,
+  parseArgs,
+  parseSemver,
+  rollChangelog,
+  syncPackageJson,
+  writeVersion,
+};

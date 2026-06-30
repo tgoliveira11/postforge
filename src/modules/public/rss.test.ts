@@ -89,4 +89,36 @@ describe("rss builder", () => {
     expect(xml).toContain("<pubDate>Mon, 15 Jun 2026 12:00:00 GMT</pubDate>");
     expect(xml).toContain("<pubDate>Sat, 20 Jun 2026 12:00:00 GMT</pubDate>");
   });
+
+  it("leaves pubDate empty when publishedAt is missing", () => {
+    const bundle = makeBundle("draft-like", "Draft Like");
+    bundle.post.publishedAt = null;
+
+    const xml = buildRssXml(config, [bundle]);
+
+    expect(xml).toContain("<pubDate></pubDate>");
+  });
+
+  it("includes category and tag names as RSS categories", () => {
+    const now = new Date("2026-06-14T12:00:00.000Z");
+    const bundle = makeBundle("categorized", "Categorized Post");
+    bundle.category = {
+      id: "cat-1",
+      name: "Engineering",
+      slug: "engineering",
+      description: null,
+      createdAt: now,
+      updatedAt: now,
+    };
+    bundle.tags = [
+      { id: "tag-1", name: "Release", slug: "release", createdAt: now, updatedAt: now },
+      { id: "tag-2", name: "News & Updates", slug: "news-updates", createdAt: now, updatedAt: now },
+    ];
+
+    const xml = buildRssXml(config, [bundle]);
+
+    expect(xml).toContain("<category>Engineering</category>");
+    expect(xml).toContain("<category>Release</category>");
+    expect(xml).toContain("<category>News &amp; Updates</category>");
+  });
 });

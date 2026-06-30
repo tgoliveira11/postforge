@@ -57,4 +57,41 @@ describe("admin posts sort helpers", () => {
       })
     ).toBe("default");
   });
+
+  it("returns null for inactive columns and direction for active ones", () => {
+    expect(
+      adminSortIndicator({
+        column: "title",
+        currentSort: "status",
+        currentDirection: "desc",
+        usesDefaultSort: false,
+      })
+    ).toBeNull();
+
+    expect(
+      adminSortIndicator({
+        column: "title",
+        currentSort: "title",
+        currentDirection: "desc",
+        usesDefaultSort: false,
+      })
+    ).toBe("desc");
+
+    expect(
+      adminSortIndicator({
+        column: "title",
+        currentSort: "title",
+        usesDefaultSort: false,
+      })
+    ).toBe("asc");
+  });
+
+  it("builds href without query string when filters are empty", () => {
+    expect(
+      buildAdminPostsSortHref({
+        column: "title",
+        filters: {},
+      })
+    ).toBe("/admin/posts?sort=title&direction=asc");
+  });
 });

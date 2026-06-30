@@ -8,7 +8,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Sem
 
 ### Added
 
-- Branch/PR/release workflow documentation, CI checks, and manual GitHub Release pipeline.
+- Vitest coverage thresholds (90% lines, statements, functions, and branches) for `src/lib`, `src/modules`, and `scripts`.
+- Database migration `0005` for `@tgoliveira/secure-auth` 0.4.x (user roles, invite codes, API keys, login attempt counters, admin config overrides).
+
+### Changed
+
+- Upgraded `@tgoliveira/secure-auth` from 0.1.x to **0.4.1**.
+- `npm run validate` now runs `test:coverage` instead of `test` only.
 
 ## [0.1.0] - 2026-06-19
 

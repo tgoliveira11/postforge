@@ -67,4 +67,37 @@ Markdown body.`
     expect(parsed.data.slug).toBe("from-disk");
     expect(parsed.content).toBe("Markdown body.");
   });
+
+  it("handles malformed or incomplete frontmatter blocks", () => {
+    expect(parseFrontmatter("----\ntitle: Broken")).toEqual({
+      data: {},
+      content: "----\ntitle: Broken",
+    });
+
+    expect(parseFrontmatter("---\ntitle: Missing close")).toEqual({
+      data: {},
+      content: "---\ntitle: Missing close",
+    });
+  });
+
+  it("strips leading carriage returns and newlines from body content", () => {
+    const parsed = parseFrontmatter(`---
+title: Post
+---
+\r\n\r\nActual body.`);
+
+    expect(parsed.content).toBe("Actual body.");
+  });
+
+  it("ignores non-object yaml frontmatter values", () => {
+    const parsed = parseFrontmatter(`---
+- just
+- a
+- list
+---
+Body.`);
+
+    expect(parsed.data).toEqual({});
+    expect(parsed.content).toBe("Body.");
+  });
 });

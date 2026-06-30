@@ -125,4 +125,86 @@ describe("taxonomy.service findOrCreate", () => {
     expect(categoriesService.createCategory).toHaveBeenCalledWith({ name: "Engineering" });
     expect(categoryResult.created).toBe(true);
   });
+
+  it("reuses an existing category by case-insensitive name", async () => {
+    vi.mocked(categoriesRepo.findCategoryBySlug).mockResolvedValue(undefined);
+    vi.mocked(categoriesRepo.findCategoryByNameCaseInsensitive).mockResolvedValue(sampleCategory);
+
+    const result = await taxonomyService.findOrCreateCategory("engineering");
+
+    expect(result.item).toEqual(sampleCategory);
+    expect(result.created).toBe(false);
+    expect(categoriesService.createCategory).not.toHaveBeenCalled();
+  });
+
+  it("reuses category after create conflict", async () => {
+    vi.mocked(categoriesRepo.findCategoryBySlug)
+      .mockResolvedValueOnce(undefined)
+      .mockResolvedValueOnce(sampleCategory);
+    vi.mocked(categoriesRepo.findCategoryByNameCaseInsensitive).mockResolvedValue(undefined);
+    vi.mocked(categoriesService.createCategory).mockRejectedValue(
+      new ConflictError("Category slug already exists")
+    );
+
+    const result = await taxonomyService.findOrCreateCategory("Engineering");
+
+    expect(result.item).toEqual(sampleCategory);
+    expect(result.created).toBe(false);
+  });
+
+  it("rethrows tag conflicts when fallback lookup misses", async () => {
+    vi.mocked(tagsRepo.findTagBySlug).mockResolvedValue(undefined);
+    vi.mocked(tagsRepo.findTagByNameCaseInsensitive).mockResolvedValue(undefined);
+    vi.mocked(tagsService.createTag).mockRejectedValue(new ConflictError("Tag slug already exists"));
+
+    await expect(taxonomyService.findOrCreateTag("nextjs")).rejects.toBeInstanceOf(ConflictError);
+  });
+
+  it("rejects invalid taxonomy names", async () => {
+    await expect(taxonomyService.findOrCreateTag("")).rejects.toThrow(/name/i);
+  });
+});
+
+describe("taxonomy.service search", () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+  });
+
+  it("searchTags returns empty results for blank queries", async () => {
+    await expect(taxonomyService.searchTags("   ")).resolves.toEqual([]);
+    expect(tagsRepo.searchTagsByName).not.toHaveBeenCalled();
+  });
+
+  it("searchTags delegates trimmed queries to the repository", async () => {
+    vi.mocked(tagsRepo.searchTagsByName).mockResolvedValue([sampleTag]);
+
+    const results = await taxonomyService.searchTags("  next  ");
+
+    expect(tagsRepo.searchTagsByName).toHaveBeenCalledWith("next");
+    expect(results).toEqual([sampleTag]);
+  });
+
+  it("searchCategories returns empty results for blank queries", async () => {
+    await expect(taxonomyService.searchCategories("")).resolves.toEqual([]);
+    expect(categoriesRepo.searchCategoriesByName).not.toHaveBeenCalled();
+  });
+
+  it("searchCategories delegates trimmed queries to the repository", async () => {
+    vi.mocked(categoriesRepo.searchCategoriesByName).mockResolvedValue([sampleCategory]);
+
+    const results = await taxonomyService.searchCategories("eng");
+
+    expect(categoriesRepo.searchCategoriesByName).toHaveBeenCalledWith("eng");
+    expect(results).toEqual([sampleCategory]);
+  });
+});
+
+describe("taxonomy.service normalizeTaxonomyInput", () => {
+  it("normalizes valid input", () => {
+    expect(taxonomyService.normalizeTaxonomyInput("  hello   world  ")).toBe("hello world");
+  });
+
+  it("rejects names that are too long after normalization", () => {
+    expect(() => taxonomyService.normalizeTaxonomyInput("x".repeat(121))).toThrow(/1 and 120/i);
+  });
 });
