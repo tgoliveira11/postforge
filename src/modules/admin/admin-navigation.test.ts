@@ -27,6 +27,18 @@ describe("admin navigation", () => {
     );
   });
 
+  it("never highlights external nav items", () => {
+    const publicBlog = { href: "/", label: "Public Blog", external: true };
+    expect(isAdminNavItemActive("/", publicBlog)).toBe(false);
+    expect(isAdminNavItemActive("/blog", publicBlog)).toBe(false);
+  });
+
+  it("highlights dashboard only on exact /admin path", () => {
+    const dashboard = { href: "/admin", label: "Dashboard" };
+    expect(isAdminNavItemActive("/admin", dashboard)).toBe(true);
+    expect(isAdminNavItemActive("/admin/posts", dashboard)).toBe(false);
+  });
+
   it("highlights posts list and edit routes but not new post", () => {
     const postsItem = { href: "/admin/posts", label: "Posts" };
     expect(isAdminNavItemActive("/admin/posts", postsItem)).toBe(true);

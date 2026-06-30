@@ -83,4 +83,16 @@ describe("admin posts filter url helpers", () => {
   it("returns no tag matches for unknown query", () => {
     expect(filterTagsByQuery(tags, "missing")).toEqual([]);
   });
+
+  it("returns all tags for an empty query", () => {
+    expect(filterTagsByQuery(tags, "   ")).toEqual(tags);
+  });
+
+  it("filters tags when showAllTags is false and query is present", () => {
+    expect(getTagFilterOptions(tags, "dev", false).map((tag) => tag.name)).toEqual(["DevOps"]);
+  });
+
+  it("builds base admin posts url when no filters are set", () => {
+    expect(buildAdminPostsFilterUrl({}, { tagId: null })).toBe("/admin/posts");
+  });
 });

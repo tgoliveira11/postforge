@@ -26,4 +26,8 @@ describe("generateDatedSlugFromTitle", () => {
     expect(slug.length).toBeLessThanOrEqual(120);
     expect(normalizeSlug(slug)).toBe(slug);
   });
+
+  it("falls back to post when title slugifies to empty", () => {
+    expect(generateDatedSlugFromTitle("!!!", fixedDate)).toBe("2026-06-16-post");
+  });
 });

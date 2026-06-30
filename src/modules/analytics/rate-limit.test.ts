@@ -29,4 +29,11 @@ describe("analytics rate limit", () => {
 
     expect(limited).toBe(true);
   });
+
+  it("builds anonymous client keys when IP headers are missing", () => {
+    const request = new Request("https://example.com/api/analytics/post-view");
+    const key = getAnalyticsClientKey(request);
+
+    expect(key).toBeTruthy();
+  });
 });

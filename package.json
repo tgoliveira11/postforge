@@ -9,7 +9,8 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "validate": "npm run typecheck && npm test && npm run lint && npm run build",
+    "test:coverage": "vitest run --coverage",
+    "validate": "npm run typecheck && npm run test:coverage && npm run lint && npm run build",
     "audit": "npm audit",
     "audit:prod": "npm audit --omit=dev",
     "audit:ci": "npm audit --audit-level=moderate",
@@ -28,7 +29,7 @@
     }
   },
   "dependencies": {
-    "@tgoliveira/secure-auth": "^0.1.25",
+    "@tgoliveira/secure-auth": "^0.4.1",
     "@vercel/blob": "^2.4.0",
     "cheerio": "^1.2.0",
     "drizzle-orm": "^0.45.2",
@@ -52,6 +53,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@vitest/coverage-v8": "^4.1.8",
     "@tailwindcss/postcss": "^4",
     "@types/js-yaml": "^4.0.9",
     "@types/mdast": "^4.0.4",

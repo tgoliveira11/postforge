@@ -35,6 +35,7 @@ import {
   getBlogAnalyticsDetail,
   getBlogAnalyticsSummary,
   getPostAnalyticsDetail,
+  getPostAnalyticsSummary,
   getTopPostsByViews,
   trackPostView,
 } from "@/modules/analytics/analytics.service";
@@ -168,6 +169,45 @@ describe("analytics service", () => {
     expect(detail.enriched.recentVisits).toEqual([]);
     expect(repo.getTopReferrerHosts).not.toHaveBeenCalled();
     expect(repo.getRecentAnalyticsEvents).not.toHaveBeenCalled();
+  });
+
+  it("trackPostView rejects missing posts", async () => {
+    vi.mocked(postsRepo.findPostById).mockResolvedValue(undefined);
+
+    await expect(trackPostView({ postId: "missing", sessionHash: "hash" })).rejects.toBeInstanceOf(
+      NotFoundError
+    );
+  });
+
+  it("getPostAnalyticsDetail throws when post is missing", async () => {
+    vi.mocked(postsRepo.findPostById).mockResolvedValue(undefined);
+
+    await expect(getPostAnalyticsDetail("missing")).rejects.toBeInstanceOf(NotFoundError);
+  });
+
+  it("getPostAnalyticsDetail skips enriched queries when post has no views", async () => {
+    vi.mocked(postsRepo.findPostById).mockResolvedValue({ id: "post-1" } as never);
+    vi.mocked(repo.sumAllViews).mockResolvedValue(0);
+    vi.mocked(repo.sumViewsSince).mockResolvedValue(0);
+    vi.mocked(repo.getPostViewsByDay).mockResolvedValue([]);
+    vi.mocked(repo.getPostReferrerEvents).mockResolvedValue([]);
+    vi.mocked(repo.getPostDeviceEvents).mockResolvedValue([]);
+    vi.mocked(repo.getRecentPostViews).mockResolvedValue([]);
+
+    const detail = await getPostAnalyticsDetail("post-1");
+
+    expect(detail.summary.totalViews).toBe(0);
+    expect(detail.enriched.recentVisits).toEqual([]);
+    expect(repo.getTopReferrerHosts).not.toHaveBeenCalled();
+  });
+
+  it("getPostAnalyticsSummary returns totals", async () => {
+    vi.mocked(repo.sumAllViews).mockResolvedValue(4);
+    vi.mocked(repo.sumViewsSince).mockResolvedValue(1);
+
+    const summary = await getPostAnalyticsSummary("post-1");
+
+    expect(summary.totalViews).toBe(4);
   });
 
   it("getBlogAnalyticsDetail marks enriched unavailable when queries fail", async () => {
