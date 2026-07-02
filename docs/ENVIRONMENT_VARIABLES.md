@@ -124,7 +124,10 @@ See `.env.example` for:
 - `TWO_FACTOR_SECRET_ENCRYPTION_KEY`
 - `AUTH_SESSION_*`
 - `AUTH_PASSWORD_*`
-- `AUTH_RATE_LIMIT_STORE`
+- `AUTH_RATE_LIMIT_STORE` — use `postgres` in production (required by secure-auth ≥ 0.5.0 when `NODE_ENV=production`)
+- `AUTH_TRUST_FORWARDED_HEADERS` — set `true` behind reverse proxies (Vercel, nginx) for accurate rate limiting
+- `AUTH_MAGIC_LINK_ENABLED`, `AUTH_SECURITY_NOTIFICATIONS_ENABLED`, `AUTH_PASSWORD_HIBP_ENABLED` — v0.2 opt-in features
+- `AUTH_ADMIN_ENABLED`, `AUTH_INVITES_ENABLED`, `AUTH_API_KEYS_ENABLED`, etc. — v0.3 opt-in features (see `.env.example`)
 - `AUTH_COOKIE_SECURE` — set `true` in HTTPS production
 - `AUTH_TRACE` — debug only
 - `AUTH_DEBUG_EXPOSE_TRACE_ROUTE` — never enable in production (requires `AUTH_TRACE=true`)

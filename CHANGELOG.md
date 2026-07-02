@@ -13,8 +13,10 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Sem
 
 ### Changed
 
-- Upgraded `@tgoliveira/secure-auth` from 0.1.x to **0.4.1**.
+- Upgraded `@tgoliveira/secure-auth` from 0.1.x to **0.5.0** (via 0.4.1).
 - `npm run validate` now runs `test:coverage` instead of `test` only.
+- Consumer env mappings aligned with secure-auth 0.5.0: production postgres rate limiting, `AUTH_TRUST_FORWARDED_HEADERS`, v0.2/v0.3 opt-in flags, GitHub OAuth, CAPTCHA.
+- `/login/2fa` passes `initialUsernameEmail` for password-manager 2FA auto-submit (0.5.0).
 
 ## [0.1.0] - 2026-06-19
 

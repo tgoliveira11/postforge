@@ -1,3 +1,11 @@
-"use client";
+import { getLoginTwoFactorInitialUsernameEmail } from "@tgoliveira/secure-auth/next";
+import { LoginTwoFactorPage } from "@tgoliveira/secure-auth/react";
+import { secureAuth } from "@/lib/auth/secure-auth";
 
-export { LoginTwoFactorPage as default } from "@tgoliveira/secure-auth/react";
+export default async function Page() {
+  const initialUsernameEmail = await getLoginTwoFactorInitialUsernameEmail(
+    secureAuth.getServices
+  );
+
+  return <LoginTwoFactorPage initialUsernameEmail={initialUsernameEmail} />;
+}

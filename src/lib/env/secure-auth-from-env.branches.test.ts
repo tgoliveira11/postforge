@@ -60,13 +60,32 @@ describe("buildSecureAuthConfigFromEnv branch coverage", () => {
     });
   });
 
-  it("omits microsoft oauth when credentials are incomplete", () => {
+  it("defaults rate limiting to postgres when NODE_ENV is production", () => {
     const config = buildSecureAuthConfigFromEnv(defaults, {
       NEXTAUTH_SECRET: "secret",
       TWO_FACTOR_SECRET_ENCRYPTION_KEY: "2fa-key",
-      AUTH_MICROSOFT_CLIENT_ID: "ms-client",
+      NODE_ENV: "production",
     });
 
-    expect(config.oauth?.microsoft).toBeUndefined();
+    expect(config.rateLimit?.store).toBe("postgres");
+    expect(config.server?.environment).toBe("production");
+  });
+
+  it("maps trust forwarded headers and v0.3 feature flags from env", () => {
+    const config = buildSecureAuthConfigFromEnv(defaults, {
+      NEXTAUTH_SECRET: "secret",
+      TWO_FACTOR_SECRET_ENCRYPTION_KEY: "2fa-key",
+      AUTH_TRUST_FORWARDED_HEADERS: "true",
+      AUTH_MAGIC_LINK_ENABLED: "true",
+      AUTH_ADMIN_ENABLED: "true",
+      AUTH_ADMIN_PATH: "/custom-admin",
+      AUTH_INVITES_ENABLED: "true",
+    });
+
+    expect(config.security?.trustForwardedHeaders).toBe(true);
+    expect(config.auth.magicLink?.enabled).toBe(true);
+    expect(config.admin?.enabled).toBe(true);
+    expect(config.admin?.path).toBe("/custom-admin");
+    expect(config.invites?.enabled).toBe(true);
   });
 });
