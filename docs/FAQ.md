@@ -197,10 +197,12 @@ Yes. The attribution is in `src/components/public/site-footer.tsx` in **your** r
 ## How do I update `@tgoliveira/secure-auth`?
 
 ```bash
-npm install @tgoliveira/secure-auth@0.4.1
+npm install @tgoliveira/secure-auth@0.5.0
 npm run db:migrate
 npm test && npm run build
 ```
+
+From **0.5.0**, production deployments must use `AUTH_RATE_LIMIT_STORE=postgres` (enforced when `NODE_ENV=production`). Behind a reverse proxy, set `AUTH_TRUST_FORWARDED_HEADERS=true` so rate limits use the real client IP. `/login/2fa` should pass `initialUsernameEmail` via `getLoginTwoFactorInitialUsernameEmail` for password-manager OTP auto-submit.
 
 From **0.4.x**, secure-auth adds user roles/status, invite codes, API keys, login-attempt counters, and admin config override tables. PostForge ships migration `drizzle/0005_*.sql` — run `npm run db:migrate` after upgrading.
 
