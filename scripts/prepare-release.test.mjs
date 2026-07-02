@@ -215,15 +215,26 @@ function runMainInProcess(args, { log = true } = {}) {
   };
 }
 
+function withReleaseNotes(changelog, unreleasedBody = "### Changed\n- Test release note\n") {
+  return changelog.replace(
+    /^## \[Unreleased\]\s*\n[\s\S]*?(?=^## \[|\Z)/m,
+    `## [Unreleased]\n\n${unreleasedBody}\n\n`
+  );
+}
+
 describe("prepare-release.mjs", () => {
   let versionBackup;
   let changelogBackup;
   let packageBackup;
+  let currentVersion;
+  let currentParsed;
 
   beforeEach(() => {
     versionBackup = readFileSync(VERSION_FILE, "utf8");
     changelogBackup = readFileSync(CHANGELOG_FILE, "utf8");
     packageBackup = readFileSync(PACKAGE_FILE, "utf8");
+    currentVersion = versionBackup.trim();
+    currentParsed = parseSemver(currentVersion);
   });
 
   afterEach(() => {
@@ -232,29 +243,69 @@ describe("prepare-release.mjs", () => {
     writeFileSync(PACKAGE_FILE, packageBackup);
   });
 
-  it("bumps patch version in dry-run without writing files", () => {
-    const { result } = runMainInProcess(["--dry-run", "--bump", "patch"]);
-
-    expect(result).toMatchObject({
-      changed: true,
-      version: "0.1.1",
-      recovery: false,
-      unreleasedEmpty: false,
+  describe("with release notes in [Unreleased]", () => {
+    beforeEach(() => {
+      writeFileSync(CHANGELOG_FILE, withReleaseNotes(changelogBackup));
     });
-    expect(readFileSync(VERSION_FILE, "utf8")).toBe(versionBackup);
-    expect(readFileSync(CHANGELOG_FILE, "utf8")).toBe(changelogBackup);
-  });
 
-  it("supports minor and major dry-run bumps", () => {
-    expect(runMainInProcess(["--dry-run", "--bump", "minor"]).result.version).toBe("0.2.0");
-    expect(runMainInProcess(["--dry-run", "--bump", "major"]).result.version).toBe("1.0.0");
-    expect(runMainInProcess(["--dry-run", "--bump=auto"]).result.version).toBe("0.1.1");
-  });
+    it("bumps patch version in dry-run without writing files", () => {
+      const { result } = runMainInProcess(["--dry-run", "--bump", "patch"]);
 
-  it("accepts an explicit next semver greater than the current version", () => {
-    const { result } = runMainInProcess(["--dry-run", "--bump", "0.2.5"]);
+      expect(result).toMatchObject({
+        changed: true,
+        version: bumpSemver(currentParsed, "patch"),
+        recovery: false,
+        unreleasedEmpty: false,
+      });
+      expect(readFileSync(VERSION_FILE, "utf8")).toBe(versionBackup);
+      expect(readFileSync(CHANGELOG_FILE, "utf8")).toBe(withReleaseNotes(changelogBackup));
+    });
 
-    expect(result.version).toBe("0.2.5");
+    it("supports minor and major dry-run bumps", () => {
+      expect(runMainInProcess(["--dry-run", "--bump", "minor"]).result.version).toBe(
+        bumpSemver(currentParsed, "minor")
+      );
+      expect(runMainInProcess(["--dry-run", "--bump", "major"]).result.version).toBe(
+        bumpSemver(currentParsed, "major")
+      );
+      expect(runMainInProcess(["--dry-run", "--bump=auto"]).result.version).toBe(
+        bumpSemver(currentParsed, "patch")
+      );
+    });
+
+    it("accepts an explicit next semver greater than the current version", () => {
+      const { result } = runMainInProcess(["--dry-run", "--bump", "0.2.5"]);
+
+      expect(result.version).toBe("0.2.5");
+    });
+
+    it("writes release files when dry-run is not set", () => {
+      const nextVersion = bumpSemver(currentParsed, "patch");
+      const { result } = runMainInProcess(["--bump", "patch"]);
+
+      expect(result.changed).toBe(true);
+      expect(readFileSync(VERSION_FILE, "utf8").trim()).toBe(nextVersion);
+      expect(JSON.parse(readFileSync(PACKAGE_FILE, "utf8")).version).toBe(nextVersion);
+      expect(readFileSync(CHANGELOG_FILE, "utf8")).toContain(`## [${nextVersion}] - `);
+    });
+
+    it("rejects unknown bump strategies", () => {
+      expect(() => runMainInProcess(["--dry-run", "--bump", "nightly"])).toThrow(
+        'Unknown bump "nightly"'
+      );
+    });
+
+    it("rejects explicit versions that are not greater than the current version", () => {
+      expect(() => runMainInProcess(["--dry-run", "--bump", currentVersion])).toThrow(
+        "must be greater than current"
+      );
+    });
+
+    it("keeps the CLI entrypoint working", () => {
+      const result = runPrepareRelease(["--dry-run", "--bump", "patch"]);
+
+      expect(result.changed).toBe(true);
+    });
   });
 
   it("enters recovery mode when [Unreleased] has no release notes", () => {
@@ -270,7 +321,7 @@ describe("prepare-release.mjs", () => {
 
     expect(result).toMatchObject({
       changed: false,
-      version: "0.1.0",
+      version: currentVersion,
       recovery: true,
       unreleasedEmpty: true,
     });
@@ -290,33 +341,6 @@ describe("prepare-release.mjs", () => {
 
     expect(result.recovery).toBe(true);
     expect(result.unreleasedEmpty).toBe(true);
-  });
-
-  it("writes release files when dry-run is not set", () => {
-    const { result } = runMainInProcess(["--bump", "patch"]);
-
-    expect(result.changed).toBe(true);
-    expect(readFileSync(VERSION_FILE, "utf8").trim()).toBe("0.1.1");
-    expect(JSON.parse(readFileSync(PACKAGE_FILE, "utf8")).version).toBe("0.1.1");
-    expect(readFileSync(CHANGELOG_FILE, "utf8")).toContain("## [0.1.1] - ");
-  });
-
-  it("rejects unknown bump strategies", () => {
-    expect(() => runMainInProcess(["--dry-run", "--bump", "nightly"])).toThrow(
-      'Unknown bump "nightly"'
-    );
-  });
-
-  it("rejects explicit versions that are not greater than the current version", () => {
-    expect(() => runMainInProcess(["--dry-run", "--bump", "0.1.0"])).toThrow(
-      "must be greater than current"
-    );
-  });
-
-  it("keeps the CLI entrypoint working", () => {
-    const result = runPrepareRelease(["--dry-run", "--bump", "patch"]);
-
-    expect(result.changed).toBe(true);
   });
 
   it("exits with an error when VERSION is invalid", () => {
