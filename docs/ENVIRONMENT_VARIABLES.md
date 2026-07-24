@@ -219,11 +219,14 @@ See [STORAGE_STRATEGY.md](STORAGE_STRATEGY.md) and [deployment-vercel-neon.md](d
 
 | Mechanism | Purpose | Notes |
 |-----------|---------|-------|
-| `blog_settings.analyticsEnabled` | Toggle post view tracking | DB key; default enabled |
-| `ANALYTICS_ENABLED` | Reserved env name | **Not wired in code yet** — use blog settings or future env support |
+| `blog_settings.analyticsEnabled` | Toggle analytics integrations | DB key; default enabled |
+| `ANALYTICS_ENABLED` | Env fallback for analytics integrations | Used when `blog_settings.analyticsEnabled` is not set |
+| `GOOGLE_ANALYTICS_MEASUREMENT_ID` | Optional GA4 / Google tag measurement ID | Public route group only; omitted or blank disables GA4 |
 | `ANALYTICS_STORE_RAW_IP` | Store raw visitor IP in `analytics_events.ip_address` | Default `false`; when false only `ip_hash` is stored |
 
 Post view API: `POST /api/analytics/post-view` (rate-limited, published posts only).
+
+GA4 sends public App Router page views, `/search?q=` result events, and Web Vitals when configured. It is not loaded on admin, auth, or account routes.
 
 Captured request data includes referrer host, UTM params, coarse browser/OS, geo headers when available, device type, accept language, and a JSON `request_metadata` blob for additional fields. Enable raw IP storage only if your privacy policy covers it.
 

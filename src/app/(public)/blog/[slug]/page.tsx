@@ -11,9 +11,11 @@ import {
   getPublishedPostBundleBySlug,
 } from "@/modules/public/public-posts.service";
 import {
+  buildArticleBreadcrumbJsonLd,
   buildBlogPostingJsonLd,
   buildPostMetadata,
   resolvePostSeoWithImages,
+  stringifyJsonLd,
 } from "@/modules/public/seo";
 import { publicPostPath } from "@/modules/posts/slug";
 import * as redirectsRepo from "@/modules/redirects/redirects.repository";
@@ -29,7 +31,7 @@ export async function generateMetadata({ params }: PageProps) {
 
   const config = await getBlogConfig();
   const seo = await resolvePostSeoWithImages({ bundle, config });
-  return buildPostMetadata(seo);
+  return buildPostMetadata(seo, bundle);
 }
 
 export default async function BlogPostPage({ params }: PageProps) {
@@ -51,7 +53,10 @@ export default async function BlogPostPage({ params }: PageProps) {
     resolvePostSeoWithImages({ bundle, config }),
   ]);
 
-  const jsonLd = buildBlogPostingJsonLd(bundle, seo);
+  const jsonLd = [
+    buildBlogPostingJsonLd(bundle, seo),
+    buildArticleBreadcrumbJsonLd(bundle, seo),
+  ];
 
   return (
     <PublicLayout config={config}>
@@ -73,7 +78,7 @@ export default async function BlogPostPage({ params }: PageProps) {
 
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: stringifyJsonLd(jsonLd) }}
       />
     </PublicLayout>
   );

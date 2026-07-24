@@ -10,7 +10,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "validate": "npm run typecheck && npm run test:coverage && npm run lint && npm run build",
+    "validate": "npm run typecheck && npm run content:validate && npm run test:coverage && npm run lint && npm run build",
     "audit": "npm audit",
     "audit:prod": "npm audit --omit=dev",
     "audit:ci": "npm audit --audit-level=moderate",
@@ -18,7 +18,8 @@
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
     "import:github-pages": "tsx scripts/import-github-pages.ts",
-    "inspect:posts": "tsx scripts/inspect-posts.ts"
+    "inspect:posts": "tsx scripts/inspect-posts.ts",
+    "content:validate": "tsx scripts/validate-content.ts"
   },
   "overrides": {
     "esbuild": "^0.28.1",

@@ -35,5 +35,7 @@ describe("sitemap and robots helpers", () => {
     expect(robots).toContain("Disallow: /admin");
     expect(robots).toContain("Disallow: /api/admin");
     expect(robots).toContain("Sitemap: https://example.com/sitemap.xml");
+    expect(robots).toContain("https://example.com/llms.txt");
+    expect(robots).toContain("not a Google Search requirement");
   });
 });

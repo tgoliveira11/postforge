@@ -2,7 +2,7 @@
 
 > Living inventory of what PostForge exposes today. Update this file when routes, endpoints, jobs, integrations, or shipped/planned status changes.
 
-**Last verified:** 2026-06-19
+**Last verified:** 2026-07-24
 
 ---
 
@@ -162,6 +162,11 @@ Delegates to `secureAuth.routes.*` in `src/lib/auth/secure-auth.ts`.
 | `/rss.xml` | `src/app/rss.xml/route.ts` | Published posts; shared public order |
 | `/sitemap.xml` | `src/app/sitemap.ts` | Published URLs |
 | `/robots.txt` | `src/app/robots.txt/route.ts` | Disallows `/admin`, `/api/admin` |
+| `/llms.txt` | `src/app/llms.txt/route.ts` | Concise AI-readable map for LLM/browser-agent consumers |
+| `/llms-full.txt` | `src/app/llms-full.txt/route.ts` | Full AI-readable public content export |
+| `/opengraph-image` | `src/app/opengraph-image.tsx` | Generic fallback social preview image |
+
+`/llms.txt` and `/llms-full.txt` are optional discovery aids for LLM/browser-agent workflows; Google Search does not require or specially use them.
 
 ---
 
@@ -171,6 +176,7 @@ Delegates to `secureAuth.routes.*` in `src/lib/auth/secure-auth.ts`.
 |------------|---------|
 | `import:github-pages` | Import legacy Markdown / Jekyll content |
 | `inspect:posts` | Inspect recent posts and assets in DB |
+| `content:validate` | Validate published content health, taxonomy references, assets, redirects, and internal links |
 | `db:generate` | Generate Drizzle migrations |
 | `db:migrate` | Apply migrations |
 | `db:studio` | Drizzle Studio |
@@ -185,6 +191,7 @@ Dev/CI scripts: `dev`, `build`, `start`, `lint`, `typecheck`, `test`, `validate`
 |-------------|------|
 | `@tgoliveira/secure-auth` | Auth, sessions, 2FA, passkeys, account APIs, middleware |
 | PostgreSQL + Drizzle | Blog + auth data |
+| Google Analytics 4 / Google tag | Optional public-only analytics via `GOOGLE_ANALYTICS_MEASUREMENT_ID` or `blog_settings.googleAnalyticsMeasurementId` |
 | Vercel Blob | Optional production uploads (`UPLOAD_PROVIDER=vercel-blob`) |
 | Resend | Optional transactional email (`EMAIL_PROVIDER=resend`) |
 | Local filesystem | Dev uploads (`UPLOAD_PROVIDER=local`) |

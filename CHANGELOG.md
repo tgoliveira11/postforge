@@ -6,6 +6,22 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Sem
 
 ## [Unreleased]
 
+### Added
+
+- Optional public GA4 / Google tag integration with App Router page views, public search events, and Web Vitals forwarding.
+- AI-readable public discovery maps at `/llms.txt` and `/llms-full.txt`.
+- Generic fallback `/opengraph-image` route for social previews.
+- `npm run content:validate` for published content, taxonomy, asset, redirect, and internal-link health checks.
+
+### Changed
+
+- Strengthened public metadata helpers with canonical links, RSS/LLM alternates, robots/googlebot directives, Open Graph, Twitter card, article, and JSON-LD defaults.
+- `npm run validate` now includes `npm run content:validate`.
+
+### Fixed
+
+- Public header navigation now uses stable horizontal overflow for narrow screens and keeps Search as a normal nav link.
+
 ## [0.1.1] - 2026-07-02
 
 ### Added
