@@ -4,15 +4,15 @@ import { PublicPageShell } from "@/components/public/public-page-shell";
 import { TagList } from "@/components/public/tag-list";
 import { getBlogConfig } from "@/modules/public/blog-config";
 import { listPublicTags } from "@/modules/public/public-posts.service";
-import { buildSiteMetadata } from "@/modules/public/seo";
+import { buildPublicPageMetadata } from "@/modules/public/seo";
 
 export async function generateMetadata() {
   const config = await getBlogConfig();
-  return {
-    ...buildSiteMetadata(config),
+  return buildPublicPageMetadata(config, {
     title: "Tags",
     description: "Explore posts by topic.",
-  };
+    canonicalPath: "/tags",
+  });
 }
 
 export default async function TagsIndexPage() {

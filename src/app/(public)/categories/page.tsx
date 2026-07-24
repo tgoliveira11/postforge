@@ -4,15 +4,15 @@ import { PublicPageShell } from "@/components/public/public-page-shell";
 import { CategoryList } from "@/components/public/category-list";
 import { getBlogConfig } from "@/modules/public/blog-config";
 import { listPublicCategories } from "@/modules/public/public-posts.service";
-import { buildSiteMetadata } from "@/modules/public/seo";
+import { buildPublicPageMetadata } from "@/modules/public/seo";
 
 export async function generateMetadata() {
   const config = await getBlogConfig();
-  return {
-    ...buildSiteMetadata(config),
+  return buildPublicPageMetadata(config, {
     title: "Categories",
     description: "Browse posts by category.",
-  };
+    canonicalPath: "/categories",
+  });
 }
 
 export default async function CategoriesIndexPage() {

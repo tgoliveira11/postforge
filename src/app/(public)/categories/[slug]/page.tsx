@@ -6,7 +6,7 @@ import { PublicPageShell } from "@/components/public/public-page-shell";
 import { PostList } from "@/components/public/post-list";
 import { getBlogConfig } from "@/modules/public/blog-config";
 import { listPublishedPostBundlesByCategorySlug } from "@/modules/public/public-posts.service";
-import { buildSiteMetadata } from "@/modules/public/seo";
+import { buildPublicPageMetadata } from "@/modules/public/seo";
 
 type PageProps = { params: Promise<{ slug: string }> };
 
@@ -15,11 +15,11 @@ export async function generateMetadata({ params }: PageProps) {
   const result = await listPublishedPostBundlesByCategorySlug(slug, { limit: 1 });
   if (!result) return { title: "Category not found" };
   const config = await getBlogConfig();
-  return {
-    ...buildSiteMetadata(config),
+  return buildPublicPageMetadata(config, {
     title: `Category: ${result.category.name}`,
     description: result.category.description ?? `Posts in ${result.category.name}.`,
-  };
+    canonicalPath: `/categories/${result.category.slug}`,
+  });
 }
 
 export default async function CategoryDetailPage({ params }: PageProps) {

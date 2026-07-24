@@ -20,6 +20,8 @@ describe("revalidatePublicPaths", () => {
     expect(revalidatePathMock).toHaveBeenCalledWith("/search");
     expect(revalidatePathMock).toHaveBeenCalledWith("/rss.xml");
     expect(revalidatePathMock).toHaveBeenCalledWith("/sitemap.xml");
+    expect(revalidatePathMock).toHaveBeenCalledWith("/llms.txt");
+    expect(revalidatePathMock).toHaveBeenCalledWith("/llms-full.txt");
   });
 
   it("revalidates a specific post path when slug is provided", () => {

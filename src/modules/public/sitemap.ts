@@ -53,5 +53,8 @@ Disallow: /admin
 Disallow: /api/admin
 
 Sitemap: ${baseUrl}/sitemap.xml
+# AI-readable maps for LLM/browser-agent consumers, not a Google Search requirement.
+# ${baseUrl}/llms.txt
+# ${baseUrl}/llms-full.txt
 `;
 }

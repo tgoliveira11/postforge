@@ -8,15 +8,15 @@ import { SearchForm } from "@/components/public/search-form";
 import { normalizePage } from "@/lib/pagination";
 import { getBlogListingPage } from "@/modules/public/public-posts.service";
 import { getBlogConfig } from "@/modules/public/blog-config";
-import { buildSiteMetadata } from "@/modules/public/seo";
+import { buildPublicPageMetadata } from "@/modules/public/seo";
 
 export async function generateMetadata() {
   const config = await getBlogConfig();
-  return {
-    ...buildSiteMetadata(config),
+  return buildPublicPageMetadata(config, {
     title: "Blog",
     description: "Browse all published posts.",
-  };
+    canonicalPath: "/blog",
+  });
 }
 
 export default async function BlogListingPage({

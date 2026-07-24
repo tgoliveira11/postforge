@@ -9,6 +9,8 @@ export function revalidatePublicPaths(slug?: string) {
   revalidatePath("/search");
   revalidatePath("/rss.xml");
   revalidatePath("/sitemap.xml");
+  revalidatePath("/llms.txt");
+  revalidatePath("/llms-full.txt");
 
   if (slug) {
     revalidatePath(publicPostPath(slug));
