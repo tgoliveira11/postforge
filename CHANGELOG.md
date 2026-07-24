@@ -6,6 +6,8 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Sem
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-07-24
+
 ### Added
 
 - Optional public GA4 / Google tag integration with App Router page views, public search events, and Web Vitals forwarding.
@@ -46,6 +48,7 @@ Initial versioned baseline for the PostForge template repository.
 - Shared public post ordering across `/blog`, home recent posts, previous/next navigation, and RSS.
 - Manual GitHub Release versioning infrastructure (`VERSION`, `CHANGELOG.md`, release workflow).
 
-[Unreleased]: https://github.com/tgoliveira11/postforge/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/tgoliveira11/postforge/compare/v0.1.2...HEAD
 [0.1.0]: https://github.com/tgoliveira11/postforge/releases/tag/v0.1.0
 [0.1.1]: https://github.com/tgoliveira11/postforge/releases/tag/v0.1.1
+[0.1.2]: https://github.com/tgoliveira11/postforge/releases/tag/v0.1.2
